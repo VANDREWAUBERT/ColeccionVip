@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 Mi Álbum Digital Coleccionable</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+            color: #c9d1d9;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(90deg, #238636 0%, #1f6feb 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+        }
+
+        .main-layout {
+            display: flex;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+            flex-wrap: wrap;
+        }
+
+        .panel {
+            flex: 1;
+            min-width: 280px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .panel h2 {
+            color: #79c0ff;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #c9d1d9;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #c9d1d9;
+            font-size: 1rem;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #1f6feb;
+            box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #238636;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #2ea043;
+        }
+
+        button.secondary {
+            background: #1f6feb;
+        }
+
+        button.secondary:hover {
+            background: #388bfd;
+        }
+
+        .album-section {
+            flex: 3;
+            min-width: 300px;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 8px 16px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #c9d1d9;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .tab:hover {
+            border-color: #1f6feb;
+            color: #79c0ff;
+        }
+
+        .tab.active {
+            background: #1f6feb;
+            color: white;
+            border-color: #1f6feb;
+        }
+
+        .album-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+        }
+
+        .sticker-card {
+            background: #161b22;
+            border: 2px solid #30363d;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .sticker-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        .sticker-card.locked {
+            opacity: 0.4;
+            border-style: dashed;
+        }
+
+        .sticker-card.rarity-común { border-color: #79c0ff; }
+        .sticker-card.rarity-épica { border-color: #d29922; }
+        .sticker-card.rarity-diamante { border-color: #58a6ff; }
+        .sticker-card.rarity-legendaria { border-color: #f85149; }
+
+        .sticker-number {
+            font-size: 0.75rem;
+            color: #8b949e;
+            margin-bottom: 5px;
+        }
+
+        .sticker-count {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #238636;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .sticker-card:not(.locked) .sticker-count {
+            display: block;
+        }
+
+        .sticker-img {
+            width: 100%;
+            height: 70%;
+            object-fit: cover;
+            border-radius: 4px;
+            background: #161b22;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .sticker-name {
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-top: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+
+        .sticker-rarity {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        .rarity-text-común { color: #79c0ff; }
+        .rarity-text-épica { color: #d29922; }
+        .rarity-text-diamante { color: #58a6ff; }
+        .rarity-text-legendaria { color: #f85149; }
+
+        /* Modal / Pack Overlay */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .modal-content {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            max-width: 1000px;
+        }
+
+        .modal h2 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        /* Log / Admin Panel List */
+        .code-list {
+            max-height: 150px;
+            overflow-y: auto;
+            background: #0d1117;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            border: 1px solid #30363d;
+        }
+
+        .code-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            border-bottom: 1px dashed #21262d;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🏆 Mi Álbum Digital Coleccionable</h1>
+        <p>Canjea códigos, abre sobres y completa tu colección al 100%</p>
+        <div class="stats-container">
+            <div class="stat-box">Progreso: <span id="progress-text">0 / 100</span> (<span id="progress-pct">0%</span>)</div>
+            <div class="stat-box">Total Estampas Poseídas: <span id="total-owned">0</span></div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- Panel Izquierdo: Acciones -->
+        <div class="panel">
+            <h2>🎟 Canjear Código</h2>
+            <div class="input-group">
+                <label for="promo-code">Introduce tu código promocional:</label>
+                <input type="text" id="promo-code" placeholder="Ej: SOBRE3_ABC123" style="text-transform: uppercase;">
+                <button onclick="redeemCode()">Canjear Código</button>
+                <p id="redeem-msg" style="font-size:0.9rem; text-align:center; margin-top:5px; font-weight:bold;"></p>
+            </div>
+
+            <h2>🛠 Panel de Control (Generar Códigos)</h2>
+            <div class="input-group">
+                <label for="pack-type-select">Tamaño del sobre a crear:</label>
+                <select id="pack-type-select">
+                    <option value="3">Sobre de 3 estampas</option>
+                    <option value="5">Sobre de 5 estampas</option>
+                    <option value="8">Sobre de 8 estampas</option>
+                </select>
+                <button class="secondary" onclick="generateNewCode()">Generar Nuevo Código</button>
+                
+                <label style="margin-top: 15px;">Códigos Activos en el Sistema:</label>
+                <div class="code-list" id="active-codes-container">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+            <p style="font-size: 0.75rem; color: #8b949e; text-align: center;">Los datos se guardan automáticamente en tu navegador (LocalStorage).</p>
+        </div>
+
+        <!-- Panel Derecho: El Álbum -->
+        <div class="album-section">
+            <div class="filter-tabs">
+                <button class="tab active" onclick="filterAlbum('all', this)">Todas</button>
+                <button class="tab" onclick="filterAlbum('común', this)">Comunes (60)</button>
+                <button class="tab" onclick="filterAlbum('épica', this)">Épicas (20)</button>
+                <button class="tab" onclick="filterAlbum('diamante', this)">Diamante (10)</button>
+                <button class="tab" onclick="filterAlbum('legendaria', this)">Legendarias (10)</button>
+            </div>
+
+            <div class="album-grid" id="album-grid-container">
+                <!-- Las 100 estampas se generarán aquí con JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para cuando abres un sobre -->
+    <div class="modal" id="pack-modal">
+        <h2 id="modal-title">¡Has abierto un sobre!</h2>
+        <div class="modal-content" id="modal-cards-container">
+            <!-- Cartas obtenidas -->
+        </div>
+        <button style="width: auto; padding: 12px 40px;" onclick="closeModal()">Guardar en el Álbum</button>
+    </div>
+
+    <script>
+        // Estructura de las 100 estampas basada en tu diseño de rarezas
+        // 60 Comunes, 20 Épicas, 10 Diamante, 10 Legendarias
+        const totalStickersCount = 100;
+        const stickersData = [];
+
+        for (let i = 1; i <= 100; i++) {
+            let rarity = "común";
+            let emoji = "📁";
+            if (i > 60 && i <= 80) { rarity = "épica"; emoji = "✨"; }
+            else if (i > 80 && i <= 90) { rarity = "diamante"; emoji = "💎"; }
+            else if (i > 90) { rarity = "legendaria"; emoji = "👑"; }
+
+            stickersData.push({
+                id: i,
+                name: `Estampa #${i}`,
+                rarity: rarity,
+                emoji: emoji,
+                imgSrc: "" 
+            });
+        }
+
+        // Base de datos inicial de códigos de canje (precargados de ejemplo)
+        const defaultCodes = {
+            "BIENVENIDA3": { packs: 3, used: false },
+            "REGALO5": { packs: 5, used: false },
+            "VIP8": { packs: 8, used: false }
+        };
+
+        // Estado del Álbum (Carga desde LocalStorage o inicia vacío)
+        let userInventory = JSON.parse(localStorage.getItem('album_inventory')) || {};
+        let activeCodes = JSON.parse(localStorage.getItem('album_codes')) || defaultCodes;
+
+        // Inicializar
+        function init() {
+            renderAlbum();
+            renderCodesList();
+            updateStats();
+        }
+
+        // Renderizar cuadrícula del álbum
+        function renderAlbum(filter = 'all') {
+            const container = document.getElementById('album-grid-container');
+            container.innerHTML = '';
+
+            stickersData.forEach(sticker => {
+                if (filter !== 'all' && sticker.rarity !== filter) return;
+
+                const count = userInventory[sticker.id] || 0;
+                const isLocked = count === 0;
+
+                const card = document.createElement('div');
+                card.className = `sticker-card rarity-${sticker.rarity} ${isLocked ? 'locked' : ''}`;
+                
+                card.innerHTML = `
+                    <div class="sticker-number">#${sticker.id}</div>
+                    <div class="sticker-count">x${count}</div>
+                    <div class="sticker-img">${sticker.emoji}</div>
+                    <div class="sticker-name">${sticker.name}</div>
+                    <div class="sticker-rarity rarity-text-${sticker.rarity}">${sticker.rarity}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Cambiar pestañas de filtro
+        function filterAlbum(rarity, element) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            element.classList.add('active');
+            renderAlbum(rarity);
+        }
+
+        // Actualizar estadísticas de progreso
+        function updateStats() {
+            let uniqueOwned = 0;
+            let totalCount = 0;
+
+            for (let i = 1; i <= totalStickersCount; i++) {
+                if (userInventory[i] && userInventory[i] > 0) {
+                    uniqueOwned++;
+                    totalCount += userInventory[i];
+                }
+            }
+
+            const pct = Math.round((uniqueOwned / totalStickersCount) * 100);
+            document.getElementById('progress-text').innerText = `${uniqueOwned} / ${totalStickersCount}`;
+            document.getElementById('progress-pct').innerText = `${pct}%`;
+            document.getElementById('total-owned').innerText = totalCount;
+
+            // Guardar progreso actual
+            localStorage.setItem('album_inventory', JSON.stringify(userInventory));
+        }
+
+        // Listar los códigos activos en el panel administrador
+        function renderCodesList() {
+            const container = document.getElementById('active-codes-container');
+            container.innerHTML = '';
+
+            for (const [code, data] of Object.entries(activeCodes)) {
+                const item = document.createElement('div');
+                item.className = 'code-item';
+                item.innerHTML = `
+                    <span style="color:${data.used ? '#8b949e' : '#238636'}">${code} (${data.packs} est.)</span>
+                    <span>${data.used ? '❌ Usado' : '✅ Activo'}</span>
+                `;
+                container.appendChild(item);
+            }
+            localStorage.setItem('album_codes', JSON.stringify(activeCodes));
+        }
+
+        // Crear dinámicamente un código nuevo
+        function generateNewCode() {
+            const packType = parseInt(document.getElementById('pack-type-select').value);
+            const randomStr = Math.random().toString(36).substring(2, 7).toUpperCase();
+            const newCode = `SOBRE${packType}_${randomStr}`;
+
+            activeCodes[newCode] = { packs: packType, used: false };
+            renderCodesList();
+        }
+
+        // Canjear el código introducido por el usuario
+        function redeemCode() {
+            const input = document.getElementById('promo-code').value.trim().toUpperCase();
+            const msg = document.getElementById('redeem-msg');
+
+            if (!input) {
+                showMsg(msg, "Por favor, escribe un código.", "orange");
+                return;
+            }
+
+            if (!(input in activeCodes)) {
+                showMsg(msg, "El código no existe.", "#f85149");
+                return;
+            }
+
+            if (activeCodes[input].used) {
+                showMsg(msg, "Este código ya ha sido canjeado.", "#f85149");
+                return;
+            }
+
+            // Marcar como usado y abrir sobre
+            activeCodes[input].used = true;
+            renderCodesList();
+            
+            const packSize = activeCodes[input].packs;
+            showMsg(msg, `¡Código canjeado con éxito! Abriendo sobre de ${packSize}...`, "#238636");
+            
+            setTimeout(() => {
+                openPack(packSize);
+                document.getElementById('promo-code').value = "";
+                msg.innerText = "";
+            }, 1000);
+        }
+
+        function showMsg(element, text, color) {
+            element.innerText = text;
+            element.style.color = color;
+        }
+
+        // Algoritmo de apertura de sobres con probabilidades por rareza
+        function openPack(size) {
+            const modal = document.getElementById('pack-modal');
+            const container = document.getElementById('modal-cards-container');
+            container.innerHTML = '';
+            
+            document.getElementById('modal-title').innerText = `¡Has abierto un Sobre de ${size} Estampas!`;
+
+            const openedStickers = [];
+
+            for (let i = 0; i < size; i++) {
+                const rand = Math.random() * 100;
+                let selectedRarity = "común";
+
+                // Probabilidades de aparición en cada estampa individual:
+                // Común: 65% | Épica: 22% | Diamante: 9% | Legendaria: 4%
+                if (rand < 4) selectedRarity = "legendaria";
+                else if (rand < 13) selectedRarity = "diamante";
+                else if (rand < 35) selectedRarity = "épica";
+                else selectedRarity = "común";
+
+                // Filtrar estampas disponibles de esa rareza generada
+                const pool = stickersData.filter(s => s.rarity === selectedRarity);
+                // Seleccionar una al azar del pool
+                const randomSticker = pool[Math.floor(Math.random() * pool.length)];
+                
+                openedStickers.push(randomSticker);
+
+                // Agregar al inventario del usuario de inmediato
+                userInventory[randomSticker.id] = (userInventory[randomSticker.id] || 0) + 1;
+
+                // Crear elemento visual para el modal animado
+                const card = document.createElement('div');
+                card.className = `sticker-card rarity-${randomSticker.rarity}`;
+                card.style.opacity = "1";
+                card.style.filter = "none";
+                card.innerHTML = `
+                    <div class="sticker-number">#${randomSticker.id}</div>
+                    <div class="sticker-img" style="font-size:3rem;">${randomSticker.emoji}</div>
+                    <div class="sticker-name">${randomSticker.name}</div>
+                    <div class="sticker-rarity rarity-text-${randomSticker.rarity}">${randomSticker.rarity}</div>
+                `;
+                container.appendChild(card);
+            }
+
+            // Actualizar interfaz general del álbum de fondo
+            updateStats();
+            renderAlbum();
+
+            // Mostrar el modal
+            modal.style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById('pack-modal').style.display = "none";
+        }
+
+        // Arrancar la app al cargar
+        window.onload = init;
+    </script>
+</body>
+</html>
